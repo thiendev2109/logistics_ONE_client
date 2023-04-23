@@ -1,0 +1,69 @@
+.scrollable-content {
+    /* Set the height and width of the container element */
+    height: 100%;
+    width: 100%;
+    overflow-y: auto; /* Add scrollbar only when content exceeds container height */
+    ::-webkit-scrollbar{
+        width: 8px;
+    }
+    ::-webkit-scrollbar-thumb{
+        background-color: #377;
+    }
+    ::-webkit-slider-thumb:hover{
+        background-color: #355;
+    }
+    ::-webkit-scrollbar-track{
+        background-color: #eee;
+    }
+    .side-nav-header{
+        width: 100%;
+        display: inline-flex;
+        @media screen and (max-width: 1200px) {
+            
+        }
+        @media screen and (min-width: 1200px) {
+            
+        }
+        .side-nav-header-logo{
+            display: inline-flex;
+            .logo{
+                width: 55px;
+                height: 55px;
+                padding: 5px;
+                border: 1px solid var(--whiteColor);
+                border-radius: 8px;
+            }
+            .side-nav-header-logo-title{
+                color: var(--grayColor);
+                cursor: pointer;
+                margin-left: 20px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+               .logo-title{
+                font-size: 15px;
+                font-weight: 500;
+                margin-bottom: 5px;
+               }
+               .server{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 5px;
+                .server-name{
+                    margin: 0;
+                }
+               }
+            }
+        }
+
+        
+    }
+    .side-nav-list{
+        list-style-type: none;
+        padding: 0 10px 0 10px;
+    }
+  }
+
+
+  

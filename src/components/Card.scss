@@ -1,0 +1,11 @@
+.card-container{
+    width: 32%;
+    margin-bottom: 15px;
+    .card-content{
+        display: flex;
+        justify-content: start;
+        .card-content-icon{
+            margin-right: 15px;
+        }
+    }
+}

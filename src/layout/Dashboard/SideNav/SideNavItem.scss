@@ -1,0 +1,14 @@
+.side-nav-item{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 7px 10px;
+    color: var(--grayColor);
+    font-weight: 400;
+    .side-nav-item-title{
+        margin-bottom: 0;
+        margin-left: 20px;
+        font-size: 17px;
+    }
+}
