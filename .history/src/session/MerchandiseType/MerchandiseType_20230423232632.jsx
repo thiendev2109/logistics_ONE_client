@@ -1,14 +1,14 @@
 import { Button, Form, Input, Popconfirm, Table, Modal } from "antd";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import "./Services.scss";
+import "./MerchandiseType.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { accountAdmin, adminToken, allServices } from "../../redux/selector";
+import { accountAdmin, adminToken, allMerchandises } from "../../redux/selector";
 import {
-  createService,
-  deleteService,
-  getServices,
-  updateService,
-} from "../../services/serviceRequest";
+  createMerchandise,
+  deleteMerchandise,
+  getMerchandises,
+  updateMerchandise,
+} from "../../services/merchandiseRequest";
 import { useNavigate } from "react-router-dom";
 const EditableContext = React.createContext(null);
 
@@ -88,98 +88,101 @@ const EditableCell = ({
   return <td {...restProps}>{childNode}</td>;
 };
 
-const Services = (props) => {
-  const [serviceName, setServiceName] = useState("");
+const MerchandiseType = (props) => {
+  const [merchandiseTypeName, setMerchandiseTypeName] = useState("");
   const [price, setPrice] = useState("");
 
-    // State core
-    const [open, setOpen] = useState(false);
-    const dispatch = useDispatch();
-    const account = useSelector(accountAdmin);
-    const token = useSelector(adminToken);
-    const services = useSelector(allServices);
-    const navigate = useNavigate();
 
-    useEffect(() => {
-      if (!account) {
-        navigate("/login");
-      }
-      if (token) {
-        getServices(token, dispatch);
-      }
-    }, []);
+  // State core
+  const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
+  const account = useSelector(accountAdmin);
+  const token = useSelector(adminToken);
+  const Merchandises = useSelector(allMerchandises);
+  const navigate = useNavigate();
 
-    const handleAddService = () => {
-      const data = {
-        serviceName,
-        price,
-      };
-      createWarehouse(token, data, dispatch, navigate).then(() => {
-        getWarehouses(token, dispatch);
-      });
-      setOpen(false);
-    };
-    const handleDelete = (id_customer) => {
-      console.log(id_customer);
-      deleteWarehouse(token, dispatch, id_customer).then(() => {
-        getWarehouses(token, dispatch);
-      });
-    };
-    const handleCancel = () => {
-      setOpen(false);
-    };
-  
-    const showModal = () => {
-      setOpen(true);
-    };
+  useEffect(() => {
+    if (!account) {
+      navigate("/login");
+    }
+    if (token) {
+      getWarehouses(token, dispatch);
+    }
+  }, []);
 
-    const defaultColumns = [
-      {
-        title: "Name",
-        dataIndex: "serviceName",
-        editable: true,
-      },
-      {
-        title: "Price",
-        dataIndex: "price",
-        editable: true,
-      },
-
-      {
-        title: "Action",
-        dataIndex: "operation",
-        render: (_, record) =>
-          allServices?.length >= 1 ? (
-            <Popconfirm
-              title="Sure to delete?"
-              onConfirm={() => handleDelete(record.id_service)}>
-              <a>Delete</a>
-            </Popconfirm>
-          ) : null,
-      },
-    ];
-
-    const handleSave = (row) => {
-      const newData = [...services];
-      const index = newData.findIndex(
-        (item) => row.id_service === item.id_service
-      );
-      const item = newData[index];
-      newData.splice(index, 1, {
-        ...item,
-        ...row,
-      });
-      const updatedItem = { ...newData[index], ...row };
-  
-      updateService(
-        updatedItem,
-        token,
-        dispatch,
-        updatedItem.id_service
-      ).then(() => {
-        getServices(token, dispatch);
-      });
+  const handleAddMerchandise = () => {
+    const data = {
+      merchandiseTypeName,
+      price,
     };
+    createMerchandise(token, data, dispatch, navigate).then(() => {
+      getMerchandises(token, dispatch);
+    });
+    setOpen(false);
+  };
+
+  const handleDelete = (id_merchandiseType) => {
+    console.log(id_merchandiseType);
+    deleteMerchandise(token, dispatch, id_merchandiseType).then(() => {
+      getMerchandises(token, dispatch);
+    });
+  };
+
+  const handleCancel = () => {
+    setOpen(false);
+  };
+
+  const showModal = () => {
+    setOpen(true);
+  };
+
+  const defaultColumns = [
+    {
+      title: "Name",
+      dataIndex: "merchandiseTypeName",
+      editable: true,
+    },
+    {
+      title: "Price",
+      dataIndex: "price",
+      editable: true,
+    },
+
+    {
+      title: "Action",
+      dataIndex: "operation",
+      render: (_, record) =>
+        allMerchandises?.length >= 1 ? (
+          <Popconfirm
+            title="Sure to delete?"
+            onConfirm={() => handleDelete(record.id_merchandiseType)}>
+            <a>Delete</a>
+          </Popconfirm>
+        ) : null,
+    },
+  ];
+
+  const handleSave = (row) => {
+    const newData = [...Merchandises];
+    const index = newData.findIndex(
+      (item) => row.id_merchandiseType === item.id_merchandiseType
+    );
+    const item = newData[index];
+    newData.splice(index, 1, {
+      ...item,
+      ...row,
+    });
+    const updatedItem = { ...newData[index], ...row };
+
+    updateMerchandise(
+      updatedItem,
+      token,
+      dispatch,
+      updatedItem.id_merchandiseType
+    ).then(() => {
+      getMerchandises(token, dispatch);
+    });
+  };
   const components = {
     body: {
       row: EditableRow,
@@ -203,7 +206,7 @@ const Services = (props) => {
   });
   return (
     <div className="warehouse-session">
-      <p className="warehouse-title">Service management</p>
+      <p className="warehouse-title">Merchandise management</p>
       <div className="">
         <Button
           onClick={showModal}
@@ -211,18 +214,18 @@ const Services = (props) => {
           style={{
             marginBottom: 16,
           }}>
-          Add new service
+          Add new Merchandise
         </Button>
         <Table
           components={components}
           rowClassName={() => "editable-row"}
           bordered
-          dataSource={services ?? []}
+          dataSource={Merchandises ?? []}
           columns={columns}
         />
       </div>
       <Modal
-        title="Create new service"
+        title="Create new Merchandise"
         open={open}
         onCancel={handleCancel}
         footer={null}>
@@ -231,16 +234,16 @@ const Services = (props) => {
             name="name"
             style={{ width: "100%" }}
             rules={[
-              { required: true, message: "Please input name service !" },
+              { required: true, message: "Please input name Merchandise !" },
             ]}>
             <Input
-              placeholder="Service name"
+              placeholder="Merchandise name"
               style={{
                 padding: "8px 12px",
                 color: "var(--grayColor)",
                 fontWeight: "600",
               }}
-              onChange={(e) => setServiceName(e.target.value)}
+              onChange={(e) => setMerchandiseTypeName(e.target.value)}
             />
           </Form.Item>
 
@@ -259,14 +262,13 @@ const Services = (props) => {
             />
           </Form.Item>
 
-       
 
           <Form.Item style={{ textAlign: "center" }}>
             <Button
               type="primary"
               htmlType="submit"
               size="large"
-              onClick={handleAddService}
+              onClick={handleAddCustomer}
               style={{ padding: "5 px 10px", width: "100%" }}>
               Continue
             </Button>
@@ -277,4 +279,4 @@ const Services = (props) => {
   );
 };
 
-export default Services;
+export default MerchandiseType;

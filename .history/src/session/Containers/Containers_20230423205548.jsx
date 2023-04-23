@@ -1,26 +1,9 @@
-import {
-  Button,
-  Form,
-  Input,
-  Popconfirm,
-  Table,
-  Modal,
-  DatePicker,
-  Radio,
-  Select,
-} from "antd";
+import { Button, Form, Input, Popconfirm, Table, Modal, DatePicker, Radio, } from "antd";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import "./Containers.scss";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  accountAdmin,
-  adminToken,
-  allContainers,
-  allEmployeeType,
-  allEmployees,
-  allWarehouses,
-} from "../../redux/selector";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import "./Containers.scss";
+import { accountAdmin, adminToken, allContainers } from "../../redux/selector";
 import {
   createContainer,
   deleteContainer,
@@ -106,18 +89,17 @@ const EditableCell = ({
 };
 
 const Containers = (props) => {
-  const [containerPosition, setContainerPosition] = useState("");
-  const [size, setSize] = useState("");
+  const [containerPosition, setcontainerPosition] = useState("");
+  const [size, setsize] = useState("");
   const [id_warehouse, setId_warehouse] = useState("");
 
-  // State core
-  const [open, setOpen] = useState(false);
-  const dispatch = useDispatch();
-  const account = useSelector(accountAdmin);
-  const token = useSelector(adminToken);
-  const warehouse = useSelector(allWarehouses);
-  const containers = useSelector(allContainers);
-  const navigate = useNavigate();
+    // State core
+    const [open, setOpen] = useState(false);
+    const dispatch = useDispatch();
+    const account = useSelector(accountAdmin);
+    const token = useSelector(adminToken);
+    const containers = useSelector(allContainers);
+    const navigate = useNavigate();
 
   useEffect(() => {
     if (!account) {
@@ -171,7 +153,7 @@ const Containers = (props) => {
       dataIndex: "id_warehouse",
       editable: true,
     },
-
+ 
     {
       title: "Action",
       dataIndex: "operation",
@@ -266,7 +248,7 @@ const Containers = (props) => {
                 color: "var(--grayColor)",
                 fontWeight: "600",
               }}
-              onChange={(e) => setContainerPosition(e.target.value)}
+              onChange={(e) => setWarehouseName(e.target.value)}
             />
           </Form.Item>
 
@@ -281,23 +263,102 @@ const Containers = (props) => {
                 color: "var(--grayColor)",
                 fontWeight: "600",
               }}
-              onChange={(e) => setSize(e.target.value)}
+              onChange={(e) => setLocation(e.target.value)}
             />
           </Form.Item>
 
           <Form.Item
-            label="Warehouse"
+            name="id_warehouse"
             style={{ width: "100%" }}
-            rules={[{ required: true, message: "Please choose container !" }]}>
-            <Select onChange={(value) => setId_warehouse(value)}>
-              {warehouse?.map((item) => {
-                return (
-                  <Select.Option value={item.id_warehouse}>
-                    {item.warehouseName}
-                  </Select.Option>
-                );
-              })}
-            </Select>
+            rules={[
+              { required: true, message: "Please input Warehouse email!" },
+            ]}>
+            <Input
+              placeholder="id warehouse"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="phone"
+            style={{ width: "100%" }}
+            rules={[
+              { required: true, message: "Please input Warehouse phone!" },
+            ]}>
+            <Input
+              placeholder="Phone number"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="capacity"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please input capacity!" }]}>
+            <Input
+              placeholder="Capacity"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setCapacity(e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="country"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please input  country!" }]}>
+            <Input
+              placeholder="Country"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setCountry(e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="address"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please input address!" }]}>
+            <Input
+              placeholder="Address"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="zipcode"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please input zipcode!" }]}>
+            <Input
+              placeholder="Zipcode"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setZipcode(e.target.value)}
+            />
           </Form.Item>
 
           <Form.Item style={{ textAlign: "center" }}>
@@ -305,7 +366,7 @@ const Containers = (props) => {
               type="primary"
               htmlType="submit"
               size="large"
-              onClick={handleAddContainer}
+              onClick={handleAddCustomer}
               style={{ padding: "5 px 10px", width: "100%" }}>
               Continue
             </Button>

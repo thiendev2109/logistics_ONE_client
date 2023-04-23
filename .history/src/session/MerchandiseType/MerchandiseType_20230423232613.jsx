@@ -262,13 +262,106 @@ const MerchandiseType = (props) => {
             />
           </Form.Item>
 
+          <Form.Item
+            name="email"
+            style={{ width: "100%" }}
+            rules={[
+              { required: true, message: "Please input Warehouse email!" },
+            ]}>
+            <Input
+              placeholder="Email Address"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="phone"
+            style={{ width: "100%" }}
+            rules={[
+              { required: true, message: "Please input Warehouse phone!" },
+            ]}>
+            <Input
+              placeholder="Phone number"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="capacity"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please input capacity!" }]}>
+            <Input
+              placeholder="Capacity"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setCapacity(e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="country"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please input  country!" }]}>
+            <Input
+              placeholder="Country"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setCountry(e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="address"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please input address!" }]}>
+            <Input
+              placeholder="Address"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="zipcode"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please input zipcode!" }]}>
+            <Input
+              placeholder="Zipcode"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setZipcode(e.target.value)}
+            />
+          </Form.Item>
 
           <Form.Item style={{ textAlign: "center" }}>
             <Button
               type="primary"
               htmlType="submit"
               size="large"
-              onClick={handleAddMerchandise}
+              onClick={handleAddCustomer}
               style={{ padding: "5 px 10px", width: "100%" }}>
               Continue
             </Button>

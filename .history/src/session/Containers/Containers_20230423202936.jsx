@@ -1,26 +1,9 @@
-import {
-  Button,
-  Form,
-  Input,
-  Popconfirm,
-  Table,
-  Modal,
-  DatePicker,
-  Radio,
-  Select,
-} from "antd";
+import { Button, Form, Input, Popconfirm, Table, Modal, DatePicker, Radio, } from "antd";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import "./Containers.scss";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  accountAdmin,
-  adminToken,
-  allContainers,
-  allEmployeeType,
-  allEmployees,
-  allWarehouses,
-} from "../../redux/selector";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import "./Containers.scss";
+import { accountAdmin, adminToken, allContainers } from "../../redux/selector";
 import {
   createContainer,
   deleteContainer,
@@ -106,18 +89,9 @@ const EditableCell = ({
 };
 
 const Containers = (props) => {
-  const [containerPosition, setContainerPosition] = useState("");
-  const [size, setSize] = useState("");
+  const [containerPosition, setcontainerPosition] = useState("");
+  const [size, setsize] = useState("");
   const [id_warehouse, setId_warehouse] = useState("");
-
-  // State core
-  const [open, setOpen] = useState(false);
-  const dispatch = useDispatch();
-  const account = useSelector(accountAdmin);
-  const token = useSelector(adminToken);
-  const warehouse = useSelector(allWarehouses);
-  const containers = useSelector(allContainers);
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (!account) {
@@ -147,64 +121,58 @@ const Containers = (props) => {
     });
   };
 
-  const handleCancel = () => {
-    setOpen(false);
-  };
-
-  const showModal = () => {
-    setOpen(true);
-  };
-
   const defaultColumns = [
     {
-      title: "Container Position",
-      dataIndex: "containerPosition",
+      title: "ID",
+      dataIndex: "name",
+    },
+    {
+      title: "Position",
+      dataIndex: "name",
       editable: true,
     },
     {
       title: "Size",
-      dataIndex: "size",
+      dataIndex: "name",
       editable: true,
     },
     {
-      title: "ID Warehouse",
-      dataIndex: "id_warehouse",
+      title: "Warehouse",
+      dataIndex: "name",
       editable: true,
     },
-
     {
-      title: "Action",
+      title: "operation",
       dataIndex: "operation",
       render: (_, record) =>
-        allContainers?.length >= 1 ? (
+        dataSource.length >= 1 ? (
           <Popconfirm
             title="Sure to delete?"
-            onConfirm={() => handleDelete(record.id_container)}>
+            onConfirm={() => handleDelete(record.key)}>
             <a>Delete</a>
           </Popconfirm>
         ) : null,
     },
   ];
+  const handleAdd = () => {
+    const newData = {
+      key: count,
+      name: `Edward King ${count}`,
+      age: "32",
+      address: `London, Park Lane no. ${count}`,
+    };
+    setDataSource([...dataSource, newData]);
+    setCount(count + 1);
+  };
   const handleSave = (row) => {
-    const newData = [...containers];
-    const index = newData.findIndex(
-      (item) => row.id_container === item.id_container
-    );
+    const newData = [...dataSource];
+    const index = newData.findIndex((item) => row.key === item.key);
     const item = newData[index];
     newData.splice(index, 1, {
       ...item,
       ...row,
     });
-    const updatedItem = { ...newData[index], ...row };
-
-    updateContainer(
-      updatedItem,
-      token,
-      dispatch,
-      updatedItem.id_container
-    ).then(() => {
-      getContainers(token, dispatch);
-    });
+    setDataSource(newData);
   };
   const components = {
     body: {
@@ -232,86 +200,21 @@ const Containers = (props) => {
       <p className="container-title">Containers management</p>
       <div className="">
         <Button
-          onClick={showModal}
+          onClick={handleAdd}
           type="primary"
           style={{
             marginBottom: 16,
           }}>
-          Add new container
+          Add a row
         </Button>
         <Table
           components={components}
           rowClassName={() => "editable-row"}
           bordered
-          dataSource={containers ?? []}
+          dataSource={dataSource}
           columns={columns}
         />
       </div>
-      <Modal
-        title="Create new container"
-        open={open}
-        onCancel={handleCancel}
-        footer={null}>
-        <Form name="form-auth">
-          <Form.Item
-            name="containerposition"
-            style={{ width: "100%" }}
-            rules={[
-              { required: true, message: "Please input name warehouse !" },
-            ]}>
-            <Input
-              placeholder="Container position"
-              style={{
-                padding: "8px 12px",
-                color: "var(--grayColor)",
-                fontWeight: "600",
-              }}
-              onChange={(e) => setContainerPosition(e.target.value)}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="size"
-            style={{ width: "100%" }}
-            rules={[{ required: true, message: "Please input location!" }]}>
-            <Input
-              placeholder="Size"
-              style={{
-                padding: "8px 12px",
-                color: "var(--grayColor)",
-                fontWeight: "600",
-              }}
-              onChange={(e) => setSize(e.target.value)}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Warehouse"
-            style={{ width: "100%" }}
-            rules={[{ required: true, message: "Please choose container !" }]}>
-            <Select onChange={(value) => setId_warehouse(value)}>
-              {warehouse?.map((item) => {
-                return (
-                  <Select.Option value={item.id_warehouse}>
-                    {item.warehouseName}
-                  </Select.Option>
-                );
-              })}
-            </Select>
-          </Form.Item>
-
-          <Form.Item style={{ textAlign: "center" }}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              size="large"
-              onClick={handleAddContainer}
-              style={{ padding: "5 px 10px", width: "100%" }}>
-              Continue
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
     </div>
   );
 };

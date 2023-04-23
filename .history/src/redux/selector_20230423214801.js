@@ -16,11 +16,3 @@ export const allEmployeeType = (state) =>
 
 export const allEmployees = (state) =>
   state.employee.employees.allEmployees?.data;
-
-export const allVehicals = (state) => state.vehical.vehicals.allVehicals?.data;
-
-export const allAdmins = (state) => state.admin.admins.allAdmins?.data;
-export const allServices = (state) => state.service.services.allServices?.data;
-
-export const allMerchandises = (state) =>
-  state.merchandise.merchandises.allMerchandises?.data;

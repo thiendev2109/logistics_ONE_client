@@ -89,99 +89,72 @@ const EditableCell = ({
 };
 
 const MerchandiseType = (props) => {
-  const [merchandiseTypeName, setMerchandiseTypeName] = useState("");
-  const [price, setPrice] = useState("");
-
-
-  // State core
-  const [open, setOpen] = useState(false);
-  const dispatch = useDispatch();
-  const account = useSelector(accountAdmin);
-  const token = useSelector(adminToken);
-  const Merchandises = useSelector(allMerchandises);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!account) {
-      navigate("/login");
-    }
-    if (token) {
-      getWarehouses(token, dispatch);
-    }
-  }, []);
-
-  const handleAddMerchandise = () => {
-    const data = {
-      merchandiseTypeName,
-      price,
-    };
-    createMerchandise(token, data, dispatch, navigate).then(() => {
-      getMerchandises(token, dispatch);
-    });
-    setOpen(false);
+  const [dataSource, setDataSource] = useState([
+    {
+      key: "0",
+      name: "Edward King 0",
+      age: "32",
+      address: "London, Park Lane no. 0",
+    },
+    {
+      key: "1",
+      name: "Edward King 1",
+      age: "32",
+      address: "London, Park Lane no. 1",
+    },
+  ]);
+  const [count, setCount] = useState(2);
+  const handleDelete = (key) => {
+    const newData = dataSource.filter((item) => item.key !== key);
+    setDataSource(newData);
   };
-
-  const handleDelete = (id_merchandiseType) => {
-    console.log(id_merchandiseType);
-    deleteMerchandise(token, dispatch, id_merchandiseType).then(() => {
-      getMerchandises(token, dispatch);
-    });
-  };
-
-  const handleCancel = () => {
-    setOpen(false);
-  };
-
-  const showModal = () => {
-    setOpen(true);
-  };
-
   const defaultColumns = [
     {
+      title: "ID",
+      dataIndex: "name",
+    },
+    {
       title: "Name",
-      dataIndex: "merchandiseTypeName",
+      dataIndex: "name",
       editable: true,
     },
     {
       title: "Price",
-      dataIndex: "price",
+      dataIndex: "name",
       editable: true,
     },
-
     {
-      title: "Action",
+      title: "operation",
       dataIndex: "operation",
       render: (_, record) =>
-        allMerchandises?.length >= 1 ? (
+        dataSource.length >= 1 ? (
           <Popconfirm
             title="Sure to delete?"
-            onConfirm={() => handleDelete(record.id_merchandiseType)}>
+            onConfirm={() => handleDelete(record.key)}>
             <a>Delete</a>
           </Popconfirm>
         ) : null,
     },
   ];
-
+  const handleAdd = () => {
+    const newData = {
+      key: count,
+      name: `Edward King ${count}`,
+      age: "32",
+      address: `London, Park Lane no. ${count}`,
+    };
+    setDataSource([...dataSource, newData]);
+    setCount(count + 1);
+  };
   const handleSave = (row) => {
-    const newData = [...Merchandises];
-    const index = newData.findIndex(
-      (item) => row.id_merchandiseType === item.id_merchandiseType
-    );
+    const newData = [...dataSource];
+    const index = newData.findIndex((item) => row.key === item.key);
     const item = newData[index];
     newData.splice(index, 1, {
       ...item,
       ...row,
     });
-    const updatedItem = { ...newData[index], ...row };
-
-    updateMerchandise(
-      updatedItem,
-      token,
-      dispatch,
-      updatedItem.id_merchandiseType
-    ).then(() => {
-      getMerchandises(token, dispatch);
-    });
+    setDataSource(newData);
   };
   const components = {
     body: {
@@ -205,76 +178,25 @@ const MerchandiseType = (props) => {
     };
   });
   return (
-    <div className="warehouse-session">
-      <p className="warehouse-title">Merchandise management</p>
+    <div className="merchandise-session">
+      <p className="merchandise-title">Merchandise management</p>
       <div className="">
         <Button
-          onClick={showModal}
+          onClick={handleAdd}
           type="primary"
           style={{
             marginBottom: 16,
           }}>
-          Add new Merchandise
+          Add a row
         </Button>
         <Table
           components={components}
           rowClassName={() => "editable-row"}
           bordered
-          dataSource={Merchandises ?? []}
+          dataSource={dataSource}
           columns={columns}
         />
       </div>
-      <Modal
-        title="Create new Merchandise"
-        open={open}
-        onCancel={handleCancel}
-        footer={null}>
-        <Form name="form-auth">
-          <Form.Item
-            name="name"
-            style={{ width: "100%" }}
-            rules={[
-              { required: true, message: "Please input name Merchandise !" },
-            ]}>
-            <Input
-              placeholder="Merchandise name"
-              style={{
-                padding: "8px 12px",
-                color: "var(--grayColor)",
-                fontWeight: "600",
-              }}
-              onChange={(e) => setMerchandiseTypeName(e.target.value)}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="price"
-            style={{ width: "100%" }}
-            rules={[{ required: true, message: "Please input Price!" }]}>
-            <Input
-              placeholder="Price"
-              style={{
-                padding: "8px 12px",
-                color: "var(--grayColor)",
-                fontWeight: "600",
-              }}
-              onChange={(e) => setPrice(e.target.value)}
-            />
-          </Form.Item>
-
-
-          <Form.Item style={{ textAlign: "center" }}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              size="large"
-              onClick={handleAddMerchandise}
-              style={{ padding: "5 px 10px", width: "100%" }}>
-              Continue
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
     </div>
   );
 };
