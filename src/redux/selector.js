@@ -14,3 +14,10 @@ export const allEmployeeType = (state) =>
 
 export const allEmployees = (state) =>
   state.employee.employees.allEmployees?.data;
+
+export const allVehicals = (state) => state.vehical.vehicals.allVehicals?.data;
+
+export const allContainers = (state) =>
+  state.container.containers.allContainers?.data;
+
+export const allAdmins = (state) => state.admin.admins.allAdmins?.data;

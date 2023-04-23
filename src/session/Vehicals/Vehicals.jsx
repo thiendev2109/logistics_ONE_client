@@ -1,6 +1,20 @@
-import { Button, Form, Input, Popconfirm, Table } from "antd";
+import { Button, Form, Input, Popconfirm, Table, Modal, Select } from "antd";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import "./Vehicals.scss";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  accountAdmin,
+  adminToken,
+  allVehicals,
+  allWarehouses,
+} from "../../redux/selector";
+import { useNavigate } from "react-router-dom";
+import {
+  createVehical,
+  deleteVehical,
+  getVehicals,
+  updateVehical,
+} from "../../services/vehicalRequest";
 const EditableContext = React.createContext(null);
 
 const EditableRow = ({ index, ...props }) => {
@@ -80,84 +94,113 @@ const EditableCell = ({
 };
 
 const Vehicals = (props) => {
-  const [dataSource, setDataSource] = useState([
-    {
-      key: "0",
-      name: "Edward King 0",
-      age: "32",
-      address: "London, Park Lane no. 0",
-    },
-    {
-      key: "1",
-      name: "Edward King 1",
-      age: "32",
-      address: "London, Park Lane no. 1",
-    },
-  ]);
-  const [count, setCount] = useState(2);
-  const handleDelete = (key) => {
-    const newData = dataSource.filter((item) => item.key !== key);
-    setDataSource(newData);
-  };
-  const defaultColumns = [
-    {
-      title: "ID",
-      dataIndex: "name",
-      editable: true,
-    },
-    {
-      title: "License Plate",
-      dataIndex: "name",
-      editable: true,
-    },
-    {
-      title: "Location",
-      dataIndex: "name",
-      editable: true,
-    },
-    {
-      title: "Type",
-      dataIndex: "name",
-      editable: true,
-    },
-    {
-      title: "Warehouse",
-      dataIndex: "name",
-      editable: true,
-    },
-    {
-      title: "operation",
-      dataIndex: "operation",
-      render: (_, record) =>
-        dataSource.length >= 1 ? (
-          <Popconfirm
-            title="Sure to delete?"
-            onConfirm={() => handleDelete(record.key)}>
-            <a>Delete</a>
-          </Popconfirm>
-        ) : null,
-    },
-  ];
-  const handleAdd = () => {
-    const newData = {
-      key: count,
-      name: `Edward King ${count}`,
-      age: "32",
-      address: `London, Park Lane no. ${count}`,
+  //State for add new
+  const [licensePlate, setLicensePlate] = useState("");
+  const [id_warehouse, setIdWarehouse] = useState("");
+  const [vehicalLocation, setVehicalLocation] = useState("");
+  const [type, setType] = useState("0");
+  // State core
+  const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
+  const account = useSelector(accountAdmin);
+  const token = useSelector(adminToken);
+  const vehicals = useSelector(allVehicals);
+  const warehouse = useSelector(allWarehouses);
+  const navigate = useNavigate();
+
+  const handleAddVehical = () => {
+    const data = {
+      licensePlate,
+      vehicalLocation,
+      id_warehouse,
+      type,
     };
-    setDataSource([...dataSource, newData]);
-    setCount(count + 1);
+    createVehical(token, data, dispatch, navigate).then(() => {
+      getVehicals(token, dispatch);
+    });
+    setOpen(false);
   };
+
+  useEffect(() => {
+    if (!account) {
+      navigate("/login");
+    }
+    if (token) {
+      getVehicals(token, dispatch);
+    }
+  }, []);
+
+  const showModal = () => {
+    setOpen(true);
+  };
+
+  const handleCancel = () => {
+    setOpen(false);
+  };
+
+  const handleDelete = (id_vehical) => {
+    deleteVehical(token, dispatch, id_vehical).then(() => {
+      getVehicals(token, dispatch);
+    });
+  };
+
   const handleSave = (row) => {
-    const newData = [...dataSource];
-    const index = newData.findIndex((item) => row.key === item.key);
+    const newData = [...vehicals];
+    const index = newData.findIndex(
+      (item) => row.id_vehical === item.id_vehical
+    );
     const item = newData[index];
     newData.splice(index, 1, {
       ...item,
       ...row,
     });
-    setDataSource(newData);
+    const updatedItem = { ...newData[index], ...row };
+
+    updateVehical(updatedItem, token, dispatch, updatedItem.id_vehical).then(
+      () => {
+        getVehicals(token, dispatch);
+      }
+    );
   };
+
+  const defaultColumns = [
+    {
+      title: "License Plate",
+      dataIndex: "licensePlate",
+      editable: true,
+    },
+    {
+      title: "Location",
+      dataIndex: "vehicalLocation",
+      editable: false,
+    },
+    {
+      title: "Type",
+      dataIndex: "type",
+      editable: false,
+      render: (text, record) => {
+        return record.type === 0 ? "Truck" : "Ship";
+      },
+    },
+    {
+      title: "Warehouse",
+      dataIndex: "id_warehouse",
+      editable: false,
+    },
+    {
+      title: "Actions",
+      dataIndex: "operation",
+      render: (_, record) =>
+        vehicals?.length >= 1 ? (
+          <Popconfirm
+            title="Sure to delete?"
+            onConfirm={() => handleDelete(record.id_vehical)}>
+            <a>Delete</a>
+          </Popconfirm>
+        ) : null,
+    },
+  ];
+
   const components = {
     body: {
       row: EditableRow,
@@ -184,21 +227,96 @@ const Vehicals = (props) => {
       <p className="vehical-title">Vehicals management</p>
       <div className="">
         <Button
-          onClick={handleAdd}
+          onClick={showModal}
           type="primary"
           style={{
             marginBottom: 16,
           }}>
-          Add a row
+          Add new vehical
         </Button>
         <Table
           components={components}
           rowClassName={() => "editable-row"}
           bordered
-          dataSource={dataSource}
+          dataSource={vehicals ?? []}
           columns={columns}
         />
       </div>
+      <Modal
+        title="Create new customer"
+        open={open}
+        onCancel={handleCancel}
+        footer={null}>
+        <Form name="form-auth">
+          <Form.Item
+            name="licensePlate"
+            style={{ width: "100%" }}
+            rules={[
+              { required: true, message: "Please input license plate!" },
+            ]}>
+            <Input
+              placeholder="License plate"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setLicensePlate(e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="location"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please input location" }]}>
+            <Input
+              placeholder="Location"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setVehicalLocation(e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Warehouse"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please choose warehouse !" }]}>
+            <Select onChange={(value) => setIdWarehouse(value)}>
+              {warehouse?.map((item) => {
+                return (
+                  <Select.Option value={item.id_warehouse}>
+                    {item.warehouseName}
+                  </Select.Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Employee Type"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please choose warehouse !" }]}>
+            <Select onChange={(value) => setType(value)}>
+              <Select.Option value="0">Truck</Select.Option>
+              <Select.Option value="1">Ship</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item style={{ textAlign: "center" }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              size="large"
+              onClick={handleAddVehical}
+              style={{ padding: "5 px 10px", width: "100%" }}>
+              Continue
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

@@ -5,33 +5,35 @@ import SideNavItem from "./SideNavItem";
 import { ChevronDown } from "react-feather";
 import { Divider, Drawer, Dropdown, Space } from "antd";
 import { NavItems } from "./NavItem";
-import React from "react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { accountAdmin } from "../../../redux/selector";
 
 const SideNav = () => {
+  const account = useSelector(accountAdmin);
+
   const items = [
     {
       key: "1",
       label: (
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.antgroup.com">
-          Singapore
+        <a onClick={() => handleChangeServer(1434)} target="_blank">
+          Vietnam
         </a>
       ),
     },
     {
       key: "2",
       label: (
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.aliyun.com">
+        <a onClick={() => handleChangeServer(1435)} target="_blank">
           Korea
         </a>
       ),
     },
   ];
+
+  const handleChangeServer = (port) => {
+    console.log(port);
+  };
   const content = (
     <div className="scrollable-content">
       <div className="side-nav-header">
@@ -42,7 +44,7 @@ const SideNav = () => {
             <Dropdown menu={{ items }} className="server">
               <a onClick={(e) => e.preventDefault()}>
                 <Space>
-                  <p className="server-name">Vietnam</p>
+                  <p className="server-name">Head Quater</p>
                   <ChevronDown size={18} />
                 </Space>
               </a>
@@ -52,16 +54,29 @@ const SideNav = () => {
       </div>
       <Divider style={{ marginTop: "10px", marginBottom: "10px" }} />
       <ul className="side-nav-list">
-        {NavItems.map((item) => {
-          return (
-            <SideNavItem
-              path={item.path}
-              icon={item.icon}
-              title={item.title}
-              key={item.key}
-            />
-          );
-        })}
+        {account?.data.adminSystem === true
+          ? NavItems.map((item) => {
+              return (
+                <SideNavItem
+                  path={item.path}
+                  icon={item.icon}
+                  title={item.title}
+                  key={item.key}
+                />
+              );
+            })
+          : NavItems.filter((item) => item.key !== 12 && item.key !== 5).map(
+              (item) => {
+                return (
+                  <SideNavItem
+                    path={item.path}
+                    icon={item.icon}
+                    title={item.title}
+                    key={item.key}
+                  />
+                );
+              }
+            )}
       </ul>
     </div>
   );

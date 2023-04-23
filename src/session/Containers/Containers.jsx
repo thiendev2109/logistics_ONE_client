@@ -1,6 +1,32 @@
-import { Button, Form, Input, Popconfirm, Table } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  Popconfirm,
+  Table,
+  Modal,
+  DatePicker,
+  Radio,
+  Select,
+} from "antd";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import "./Containers.scss";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  accountAdmin,
+  adminToken,
+  allContainers,
+  allEmployeeType,
+  allEmployees,
+  allWarehouses,
+} from "../../redux/selector";
+import { useNavigate } from "react-router-dom";
+import {
+  createContainer,
+  deleteContainer,
+  getContainers,
+  updateContainer,
+} from "../../services/containerRequest";
 const EditableContext = React.createContext(null);
 
 const EditableRow = ({ index, ...props }) => {
@@ -80,78 +106,107 @@ const EditableCell = ({
 };
 
 const Containers = (props) => {
-  const [dataSource, setDataSource] = useState([
-    {
-      key: "0",
-      name: "Edward King 0",
-      age: "32",
-      address: "London, Park Lane no. 0",
-    },
-    {
-      key: "1",
-      name: "Edward King 1",
-      age: "32",
-      address: "London, Park Lane no. 1",
-    },
-  ]);
-  const [count, setCount] = useState(2);
-  const handleDelete = (key) => {
-    const newData = dataSource.filter((item) => item.key !== key);
-    setDataSource(newData);
-  };
-  const defaultColumns = [
-    {
-      title: "ID",
-      dataIndex: "name",
-    },
-    {
-      title: "Position",
-      dataIndex: "name",
-      editable: true,
-    },
-    {
-      title: "Size",
-      dataIndex: "name",
-      editable: true,
-    },
-    {
-      title: "Warehouse",
-      dataIndex: "name",
-      editable: true,
-    },
-    {
-      title: "operation",
-      dataIndex: "operation",
-      render: (_, record) =>
-        dataSource.length >= 1 ? (
-          <Popconfirm
-            title="Sure to delete?"
-            onConfirm={() => handleDelete(record.key)}>
-            <a>Delete</a>
-          </Popconfirm>
-        ) : null,
-    },
-  ];
-  const handleAdd = () => {
-    const newData = {
-      key: count,
-      name: `Edward King ${count}`,
-      age: "32",
-      address: `London, Park Lane no. ${count}`,
+  const [containerPosition, setContainerPosition] = useState("");
+  const [size, setSize] = useState("");
+  const [id_warehouse, setIdWarehouse] = useState("");
+
+  // State core
+  const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
+  const account = useSelector(accountAdmin);
+  const token = useSelector(adminToken);
+  const containers = useSelector(allContainers);
+  const warehouse = useSelector(allWarehouses);
+  const empTypes = useSelector(allEmployeeType);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!account) {
+      navigate("/login");
+    }
+    if (token) {
+      getContainers(token, dispatch);
+    }
+  }, []);
+
+  const handleAddContainer = () => {
+    const data = {
+      containerPosition,
+      size,
+      id_warehouse,
     };
-    setDataSource([...dataSource, newData]);
-    setCount(count + 1);
+    createContainer(token, data, dispatch, navigate).then(() => {
+      getContainers(token, dispatch);
+    });
+    setOpen(false);
   };
+
+  const showModal = () => {
+    setOpen(true);
+  };
+
+  const handleCancel = () => {
+    setOpen(false);
+  };
+
+  const handleDelete = (id_container) => {
+    deleteContainer(token, dispatch, id_container).then(() => {
+      getContainers(token, dispatch);
+    });
+  };
+
   const handleSave = (row) => {
-    const newData = [...dataSource];
-    const index = newData.findIndex((item) => row.key === item.key);
+    const newData = [...containers];
+    const index = newData.findIndex(
+      (item) => row.id_container === item.id_container
+    );
     const item = newData[index];
     newData.splice(index, 1, {
       ...item,
       ...row,
     });
-    setDataSource(newData);
+    const updatedItem = { ...newData[index], ...row };
+
+    updateContainer(
+      updatedItem,
+      token,
+      dispatch,
+      updatedItem.id_container
+    ).then(() => {
+      getContainers(token, dispatch);
+    });
   };
+
+  const defaultColumns = [
+    {
+      title: "Position",
+      dataIndex: "containerPosition",
+      editable: true,
+    },
+    {
+      title: "Size",
+      dataIndex: "size",
+      editable: true,
+    },
+    {
+      title: "Warehouse",
+      dataIndex: "id_warehouse",
+      editable: false,
+    },
+    {
+      title: "operation",
+      dataIndex: "operation",
+      render: (_, record) =>
+        containers.length >= 1 ? (
+          <Popconfirm
+            title="Sure to delete?"
+            onConfirm={() => handleDelete(record.id_container)}>
+            <a>Delete</a>
+          </Popconfirm>
+        ) : null,
+    },
+  ];
+
   const components = {
     body: {
       row: EditableRow,
@@ -178,7 +233,7 @@ const Containers = (props) => {
       <p className="container-title">Containers management</p>
       <div className="">
         <Button
-          onClick={handleAdd}
+          onClick={showModal}
           type="primary"
           style={{
             marginBottom: 16,
@@ -189,10 +244,77 @@ const Containers = (props) => {
           components={components}
           rowClassName={() => "editable-row"}
           bordered
-          dataSource={dataSource}
+          dataSource={containers ?? []}
           columns={columns}
         />
       </div>
+      <Modal
+        title="Create new customer"
+        open={open}
+        onCancel={handleCancel}
+        footer={null}>
+        <Form name="form-auth">
+          <Form.Item
+            name="position"
+            style={{ width: "100%" }}
+            rules={[
+              { required: true, message: "Please input container position!" },
+            ]}>
+            <Input
+              placeholder="Position"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setContainerPosition(e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="size"
+            style={{ width: "100%" }}
+            rules={[
+              { required: true, message: "Please input container size!" },
+            ]}>
+            <Input
+              placeholder="Size"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setSize(e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Warehouse"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please choose warehouse !" }]}>
+            <Select onChange={(value) => setIdWarehouse(value)}>
+              {warehouse?.map((item) => {
+                return (
+                  <Select.Option value={item.id_warehouse}>
+                    {item.warehouseName}
+                  </Select.Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
+
+          <Form.Item style={{ textAlign: "center" }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              size="large"
+              onClick={handleAddContainer}
+              style={{ padding: "5 px 10px", width: "100%" }}>
+              Continue
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

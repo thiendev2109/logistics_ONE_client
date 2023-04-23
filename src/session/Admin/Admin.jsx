@@ -1,6 +1,33 @@
-import { Button, Form, Input, Popconfirm, Table } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  Popconfirm,
+  Table,
+  Modal,
+  DatePicker,
+  Radio,
+  Select,
+} from "antd";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import "./Admin.scss";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  accountAdmin,
+  adminToken,
+  allAdmins,
+  allEmployeeType,
+  allEmployees,
+  allWarehouses,
+} from "../../redux/selector";
+import { useNavigate } from "react-router-dom";
+import {
+  createAdmin,
+  deleteAdmin,
+  getAdmins,
+  updateAdmin,
+} from "../../services/adminRequest";
+import Password from "antd/es/input/Password";
 const EditableContext = React.createContext(null);
 
 const EditableRow = ({ index, ...props }) => {
@@ -80,89 +107,118 @@ const EditableCell = ({
 };
 
 const Admin = (props) => {
-  const [dataSource, setDataSource] = useState([
-    {
-      key: "0",
-      name: "Edward King 0",
-      age: "32",
-      address: "London, Park Lane no. 0",
-    },
-    {
-      key: "1",
-      name: "Edward King 1",
-      age: "32",
-      address: "London, Park Lane no. 1",
-    },
-  ]);
-  const [count, setCount] = useState(2);
-  const handleDelete = (key) => {
-    const newData = dataSource.filter((item) => item.key !== key);
-    setDataSource(newData);
-  };
-  const defaultColumns = [
-    {
-      title: "ID",
-      dataIndex: "name",
-      editable: true,
-    },
-    {
-      title: "Name",
-      dataIndex: "name",
-      editable: true,
-    },
-    {
-      title: "Email",
-      dataIndex: "name",
-      editable: true,
-    },
-    {
-      title: "Phone",
-      dataIndex: "name",
-      editable: true,
-    },
-    {
-      title: "Type",
-      dataIndex: "name",
-      editable: true,
-    },
-    {
-      title: "Warehouse",
-      dataIndex: "name",
-      editable: true,
-    },
-    {
-      title: "operation",
-      dataIndex: "operation",
-      render: (_, record) =>
-        dataSource.length >= 1 ? (
-          <Popconfirm
-            title="Sure to delete?"
-            onConfirm={() => handleDelete(record.key)}>
-            <a>Delete</a>
-          </Popconfirm>
-        ) : null,
-    },
-  ];
-  const handleAdd = () => {
-    const newData = {
-      key: count,
-      name: `Edward King ${count}`,
-      age: "32",
-      address: `London, Park Lane no. ${count}`,
+  //State for add new
+  const [adminName, setAdminName] = useState("");
+  const [adminSystem, setAdminSystem] = useState(0);
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [id_warehouse, setIdWarehouse] = useState("");
+
+  // State core
+  const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
+  const account = useSelector(accountAdmin);
+  const token = useSelector(adminToken);
+  const admins = useSelector(allAdmins);
+  const warehouse = useSelector(allWarehouses);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!account) {
+      navigate("/login");
+    }
+    if (token) {
+      getAdmins(token, dispatch);
+    }
+  }, []);
+
+  const handleAddAdmin = () => {
+    const data = {
+      adminName,
+      adminSystem,
+      email,
+      phone,
+      password,
+      id_warehouse,
     };
-    setDataSource([...dataSource, newData]);
-    setCount(count + 1);
+    createAdmin(token, data, dispatch, navigate).then(() => {
+      getAdmins(token, dispatch);
+    });
+    setOpen(false);
   };
+
+  const showModal = () => {
+    setOpen(true);
+  };
+
+  const handleCancel = () => {
+    setOpen(false);
+  };
+
+  const handleDelete = (id_admin) => {
+    deleteAdmin(token, dispatch, id_admin).then(() => {
+      getAdmins(token, dispatch);
+    });
+  };
+
   const handleSave = (row) => {
-    const newData = [...dataSource];
-    const index = newData.findIndex((item) => row.key === item.key);
+    const newData = [...admins];
+    const index = newData.findIndex((item) => row.id_admin === item.id_admin);
     const item = newData[index];
     newData.splice(index, 1, {
       ...item,
       ...row,
     });
-    setDataSource(newData);
+    const updatedItem = { ...newData[index], ...row };
+
+    updateAdmin(updatedItem, token, dispatch, updatedItem.id_admin).then(() => {
+      getAdmins(token, dispatch);
+    });
   };
+
+  const defaultColumns = [
+    {
+      title: "Name",
+      dataIndex: "adminName",
+      editable: true,
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      editable: true,
+    },
+    {
+      title: "Phone",
+      dataIndex: "phone",
+      editable: true,
+    },
+    {
+      title: "Type",
+      dataIndex: "adminSystem",
+      editable: false,
+      render: (text, record) => {
+        return record.adminSystem ? "System" : "Branch";
+      },
+    },
+    {
+      title: "Warehouse",
+      dataIndex: "id_warehouse",
+      editable: false,
+    },
+    {
+      title: "operation",
+      dataIndex: "operation",
+      render: (_, record) =>
+        admins.length >= 1 ? (
+          <Popconfirm
+            title="Sure to delete?"
+            onConfirm={() => handleDelete(record.id_admin)}>
+            <a>Delete</a>
+          </Popconfirm>
+        ) : null,
+    },
+  ];
   const components = {
     body: {
       row: EditableRow,
@@ -189,21 +245,126 @@ const Admin = (props) => {
       <p className="admin-title">Admin management</p>
       <div className="">
         <Button
-          onClick={handleAdd}
+          onClick={showModal}
           type="primary"
           style={{
             marginBottom: 16,
           }}>
-          Add a row
+          Add a new admin
         </Button>
         <Table
           components={components}
           rowClassName={() => "editable-row"}
           bordered
-          dataSource={dataSource}
+          dataSource={admins ?? []}
           columns={columns}
         />
       </div>
+      <Modal
+        title="Create new customer"
+        open={open}
+        onCancel={handleCancel}
+        footer={null}>
+        <Form name="form-auth">
+          <Form.Item
+            name="adminName"
+            style={{ width: "100%" }}
+            rules={[
+              { required: true, message: "Please input your admin name!" },
+            ]}>
+            <Input
+              placeholder="Admin name"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setAdminName(e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item label="Admin Role" style={{ width: "100%" }}>
+            <Radio.Group
+              defaultValue={adminSystem}
+              onChange={(e) => setAdminSystem(e.target.value)}>
+              <Radio value="1"> System </Radio>
+              <Radio value="0"> Branch </Radio>
+            </Radio.Group>
+          </Form.Item>
+
+          <Form.Item
+            name="email"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please input admin email!" }]}>
+            <Input
+              placeholder="Email Address"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="phone"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please input admin phone!" }]}>
+            <Input
+              placeholder="Phone number"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item
+            name="password"
+            style={{ width: "100%" }}
+            rules={[
+              { required: true, message: "Please input admin password!" },
+            ]}>
+            <Password
+              placeholder="Password"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Warehouse"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please choose warehouse !" }]}>
+            <Select onChange={(value) => setIdWarehouse(value)}>
+              {warehouse?.map((item) => {
+                return (
+                  <Select.Option value={item.id_warehouse}>
+                    {item.warehouseName}
+                  </Select.Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
+
+          <Form.Item style={{ textAlign: "center" }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              size="large"
+              onClick={handleAddAdmin}
+              style={{ padding: "5 px 10px", width: "100%" }}>
+              Continue
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

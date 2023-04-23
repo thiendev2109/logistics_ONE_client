@@ -14,6 +14,9 @@ import customerSlice from "./slice/customerSlice";
 import warehouseSlice from "./slice/warehouseSlice";
 import employeeTypeSlice from "./slice/employeeTypeSlice";
 import employeeSlice from "./slice/employeeSlice";
+import vehicalSlice from "./slice/vehicalSlice";
+import containerSlice from "./slice/containerSlice";
+import adminSlice from "./slice/adminSlice";
 
 const rootReducer = combineReducers({
   authAdmin: authAdminSlice.reducer,
@@ -21,6 +24,9 @@ const rootReducer = combineReducers({
   warehouse: warehouseSlice.reducer,
   employeeType: employeeTypeSlice.reducer,
   employee: employeeSlice.reducer,
+  vehical: vehicalSlice.reducer,
+  container: containerSlice.reducer,
+  admin: adminSlice.reducer,
 });
 
 const persistConfig = {
