@@ -25,4 +25,11 @@ export const allServices = (state) => state.service.services.allServices?.data;
 export const allMerchandises = (state) =>
   state.merchandise.merchandises.allMerchandises?.data;
 
+<<<<<<< HEAD
 export const allBookings = (state) => state.booking.bookings.allBookings?.data;
+=======
+  export const allPayments = (state) => state.payment.payments.allPayments?.data;
+
+  export const allShippings = (state) => state.shipping.shippings.allShippings?.data;
+
+>>>>>>> 59ddd076752b8623f17d5330a8ecb01ea24a1145

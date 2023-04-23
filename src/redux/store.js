@@ -19,7 +19,11 @@ import vehicalSlice from "./slice/vehicalSlice";
 import adminSlice from "./slice/adminSlice";
 import serviceSlice from "./slice/serviceSlice";
 import merchandiseSlice from "./slice/merchandiseSlice";
+<<<<<<< HEAD
 import BookingSlice from "./slice/bookingSlice";
+=======
+import paymemtSlice from "./slice/paymentSlice";
+>>>>>>> 59ddd076752b8623f17d5330a8ecb01ea24a1145
 
 const rootReducer = combineReducers({
   authAdmin: authAdminSlice.reducer,
@@ -32,7 +36,11 @@ const rootReducer = combineReducers({
   admin: adminSlice.reducer,
   service: serviceSlice.reducer,
   merchandise: merchandiseSlice.reducer,
+<<<<<<< HEAD
   booking: BookingSlice.reducer,
+=======
+  paymemtSlice: paymemtSlice.reducer,
+>>>>>>> 59ddd076752b8623f17d5330a8ecb01ea24a1145
 });
 
 const persistConfig = {
