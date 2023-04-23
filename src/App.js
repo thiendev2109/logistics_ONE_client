@@ -12,6 +12,7 @@ import MerchandiseType from "./session/MerchandiseType/MerchandiseType";
 import Containers from "./session/Containers/Containers";
 import Warehouse from "./session/Warehouse/Warehouse";
 import EmployeeType from "./session/EmployeeType/EmployeeType";
+import Booking from "./session/Booking/Booking";
 
 function App() {
   return (
@@ -25,7 +26,7 @@ function App() {
           <Route path="/employees" element={<Employees />} />
           <Route path="/employee-type" element={<EmployeeType />} />
           <Route path="/admin" element={<Admin />} />
-          <Route path="/booking" element={<Services />} />
+          <Route path="/booking" element={<Booking />} />
           <Route path="/services" element={<Services />} />
           <Route path="/vehical" element={<Vehicals />} />
           <Route path="/merchandise-type" element={<MerchandiseType />} />

@@ -92,94 +92,91 @@ const Services = (props) => {
   const [serviceName, setServiceName] = useState("");
   const [price, setPrice] = useState("");
 
-    // State core
-    const [open, setOpen] = useState(false);
-    const dispatch = useDispatch();
-    const account = useSelector(accountAdmin);
-    const token = useSelector(adminToken);
-    const services = useSelector(allServices);
-    const navigate = useNavigate();
+  // State core
+  const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
+  const account = useSelector(accountAdmin);
+  const token = useSelector(adminToken);
+  const services = useSelector(allServices);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-      if (!account) {
-        navigate("/login");
-      }
-      if (token) {
+  useEffect(() => {
+    if (!account) {
+      navigate("/login");
+    }
+    if (token) {
+      getServices(token, dispatch);
+    }
+  }, []);
+
+  const handleAddService = () => {
+    const data = {
+      serviceName,
+      price,
+    };
+    createService(token, data, dispatch, navigate).then(() => {
+      getServices(token, dispatch);
+    });
+    setOpen(false);
+  };
+  const handleDelete = (id_customer) => {
+    console.log(id_customer);
+    deleteService(token, dispatch, id_customer).then(() => {
+      getServices(token, dispatch);
+    });
+  };
+  const handleCancel = () => {
+    setOpen(false);
+  };
+
+  const showModal = () => {
+    setOpen(true);
+  };
+
+  const defaultColumns = [
+    {
+      title: "Name",
+      dataIndex: "serviceName",
+      editable: true,
+    },
+    {
+      title: "Price",
+      dataIndex: "price",
+      editable: true,
+    },
+
+    {
+      title: "Action",
+      dataIndex: "operation",
+      render: (_, record) =>
+        allServices?.length >= 1 ? (
+          <Popconfirm
+            title="Sure to delete?"
+            onConfirm={() => handleDelete(record.id_service)}>
+            <a>Delete</a>
+          </Popconfirm>
+        ) : null,
+    },
+  ];
+
+  const handleSave = (row) => {
+    const newData = [...services];
+    const index = newData.findIndex(
+      (item) => row.id_service === item.id_service
+    );
+    const item = newData[index];
+    newData.splice(index, 1, {
+      ...item,
+      ...row,
+    });
+    const updatedItem = { ...newData[index], ...row };
+
+    updateService(updatedItem, token, dispatch, updatedItem.id_service).then(
+      () => {
         getServices(token, dispatch);
       }
-    }, []);
-
-    const handleAddService = () => {
-      const data = {
-        serviceName,
-        price,
-      };
-      createWarehouse(token, data, dispatch, navigate).then(() => {
-        getWarehouses(token, dispatch);
-      });
-      setOpen(false);
-    };
-    const handleDelete = (id_customer) => {
-      console.log(id_customer);
-      deleteWarehouse(token, dispatch, id_customer).then(() => {
-        getWarehouses(token, dispatch);
-      });
-    };
-    const handleCancel = () => {
-      setOpen(false);
-    };
-  
-    const showModal = () => {
-      setOpen(true);
-    };
-
-    const defaultColumns = [
-      {
-        title: "Name",
-        dataIndex: "serviceName",
-        editable: true,
-      },
-      {
-        title: "Price",
-        dataIndex: "price",
-        editable: true,
-      },
-
-      {
-        title: "Action",
-        dataIndex: "operation",
-        render: (_, record) =>
-          allServices?.length >= 1 ? (
-            <Popconfirm
-              title="Sure to delete?"
-              onConfirm={() => handleDelete(record.id_service)}>
-              <a>Delete</a>
-            </Popconfirm>
-          ) : null,
-      },
-    ];
-
-    const handleSave = (row) => {
-      const newData = [...services];
-      const index = newData.findIndex(
-        (item) => row.id_service === item.id_service
-      );
-      const item = newData[index];
-      newData.splice(index, 1, {
-        ...item,
-        ...row,
-      });
-      const updatedItem = { ...newData[index], ...row };
-  
-      updateService(
-        updatedItem,
-        token,
-        dispatch,
-        updatedItem.id_service
-      ).then(() => {
-        getServices(token, dispatch);
-      });
-    };
+    );
+  };
   const components = {
     body: {
       row: EditableRow,
@@ -258,8 +255,6 @@ const Services = (props) => {
               onChange={(e) => setPrice(e.target.value)}
             />
           </Form.Item>
-
-       
 
           <Form.Item style={{ textAlign: "center" }}>
             <Button

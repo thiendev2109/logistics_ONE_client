@@ -2,7 +2,11 @@ import { Button, Form, Input, Popconfirm, Table, Modal } from "antd";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import "./MerchandiseType.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { accountAdmin, adminToken, allMerchandises } from "../../redux/selector";
+import {
+  accountAdmin,
+  adminToken,
+  allMerchandises,
+} from "../../redux/selector";
 import {
   createMerchandise,
   deleteMerchandise,
@@ -92,7 +96,6 @@ const MerchandiseType = (props) => {
   const [merchandiseTypeName, setMerchandiseTypeName] = useState("");
   const [price, setPrice] = useState("");
 
-
   // State core
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
@@ -106,7 +109,7 @@ const MerchandiseType = (props) => {
       navigate("/login");
     }
     if (token) {
-      getWarehouses(token, dispatch);
+      getMerchandises(token, dispatch);
     }
   }, []);
 
@@ -261,7 +264,6 @@ const MerchandiseType = (props) => {
               onChange={(e) => setPrice(e.target.value)}
             />
           </Form.Item>
-
 
           <Form.Item style={{ textAlign: "center" }}>
             <Button
