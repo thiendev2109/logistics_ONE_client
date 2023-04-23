@@ -205,76 +205,25 @@ const MerchandiseType = (props) => {
     };
   });
   return (
-    <div className="warehouse-session">
-      <p className="warehouse-title">Merchandise management</p>
+    <div className="merchandise-session">
+      <p className="merchandise-title">Merchandise management</p>
       <div className="">
         <Button
-          onClick={showModal}
+          onClick={handleAdd}
           type="primary"
           style={{
             marginBottom: 16,
           }}>
-          Add new Merchandise
+          Add a row
         </Button>
         <Table
           components={components}
           rowClassName={() => "editable-row"}
           bordered
-          dataSource={Merchandises ?? []}
+          dataSource={dataSource}
           columns={columns}
         />
       </div>
-      <Modal
-        title="Create new Merchandise"
-        open={open}
-        onCancel={handleCancel}
-        footer={null}>
-        <Form name="form-auth">
-          <Form.Item
-            name="name"
-            style={{ width: "100%" }}
-            rules={[
-              { required: true, message: "Please input name Merchandise !" },
-            ]}>
-            <Input
-              placeholder="Merchandise name"
-              style={{
-                padding: "8px 12px",
-                color: "var(--grayColor)",
-                fontWeight: "600",
-              }}
-              onChange={(e) => setMerchandiseTypeName(e.target.value)}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="price"
-            style={{ width: "100%" }}
-            rules={[{ required: true, message: "Please input Price!" }]}>
-            <Input
-              placeholder="Price"
-              style={{
-                padding: "8px 12px",
-                color: "var(--grayColor)",
-                fontWeight: "600",
-              }}
-              onChange={(e) => setPrice(e.target.value)}
-            />
-          </Form.Item>
-
-
-          <Form.Item style={{ textAlign: "center" }}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              size="large"
-              onClick={handleAddMerchandise}
-              style={{ padding: "5 px 10px", width: "100%" }}>
-              Continue
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
     </div>
   );
 };

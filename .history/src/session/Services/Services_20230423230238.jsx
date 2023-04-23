@@ -266,7 +266,7 @@ const Services = (props) => {
               type="primary"
               htmlType="submit"
               size="large"
-              onClick={handleAddService}
+              onClick={handleAddCustomer}
               style={{ padding: "5 px 10px", width: "100%" }}>
               Continue
             </Button>

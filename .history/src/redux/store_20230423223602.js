@@ -16,7 +16,6 @@ import employeeTypeSlice from "./slice/employeeTypeSlice";
 import containerSlice from "./slice/containerSlice"
 import employeeSlice from "./slice/employeeSlice";
 import serviceSlice from "./slice/serviceSlice"
-import merchandiseSlice from "./slice/merchandiseSlice";
 
 const rootReducer = combineReducers({
   authAdmin: authAdminSlice.reducer,
@@ -26,7 +25,6 @@ const rootReducer = combineReducers({
   container: containerSlice.reducer,
   employee: employeeSlice.reducer,
   service: serviceSlice.reducer,
-  merchandise: merchandiseSlice.reducer,
 });
 
 const persistConfig = {

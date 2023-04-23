@@ -1,15 +1,15 @@
-import { Button, Form, Input, Popconfirm, Table, Modal } from "antd";
+import { Button, Form, Input, Popconfirm, Table, Modal, DatePicker, Radio, } from "antd";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import "./Services.scss";
-import { useDispatch, useSelector } from "react-redux";
-import { accountAdmin, adminToken, allServices } from "../../redux/selector";
-import {
-  createService,
-  deleteService,
-  getServices,
-  updateService,
-} from "../../services/serviceRequest";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import "./Containers.scss";
+import { accountAdmin, adminToken, allContainers, allWarehouses } from "../../redux/selector";
+import {
+  createContainer,
+  deleteContainer,
+  getContainers,
+  updateContainer,
+} from "../../services/containerRequest";
 const EditableContext = React.createContext(null);
 
 const EditableRow = ({ index, ...props }) => {
@@ -88,98 +88,107 @@ const EditableCell = ({
   return <td {...restProps}>{childNode}</td>;
 };
 
-const Services = (props) => {
-  const [serviceName, setServiceName] = useState("");
-  const [price, setPrice] = useState("");
+const Containers = (props) => {
+  const [containerPosition, setContainerPosition] = useState("");
+  const [size, setSize] = useState("");
+  const [id_warehouse, setId_warehouse] = useState("");
 
     // State core
     const [open, setOpen] = useState(false);
     const dispatch = useDispatch();
     const account = useSelector(accountAdmin);
     const token = useSelector(adminToken);
-    const services = useSelector(allServices);
+    const warehouse = useSelector(allWarehouses);
+    const containers = useSelector(allContainers);
     const navigate = useNavigate();
 
-    useEffect(() => {
-      if (!account) {
-        navigate("/login");
-      }
-      if (token) {
-        getServices(token, dispatch);
-      }
-    }, []);
+  useEffect(() => {
+    if (!account) {
+      navigate("/login");
+    }
+    if (token) {
+      getContainers(token, dispatch);
+    }
+  }, []);
 
-    const handleAddService = () => {
-      const data = {
-        serviceName,
-        price,
-      };
-      createWarehouse(token, data, dispatch, navigate).then(() => {
-        getWarehouses(token, dispatch);
-      });
-      setOpen(false);
+  const handleAddContainer = () => {
+    const data = {
+      containerPosition,
+      size,
+      id_warehouse,
     };
-    const handleDelete = (id_customer) => {
-      console.log(id_customer);
-      deleteWarehouse(token, dispatch, id_customer).then(() => {
-        getWarehouses(token, dispatch);
-      });
-    };
-    const handleCancel = () => {
-      setOpen(false);
-    };
-  
-    const showModal = () => {
-      setOpen(true);
-    };
+    createContainer(token, data, dispatch, navigate).then(() => {
+      getContainers(token, dispatch);
+    });
+    setOpen(false);
+  };
 
-    const defaultColumns = [
-      {
-        title: "Name",
-        dataIndex: "serviceName",
-        editable: true,
-      },
-      {
-        title: "Price",
-        dataIndex: "price",
-        editable: true,
-      },
+  const handleDelete = (id_container) => {
+    console.log(id_container);
+    deleteContainer(token, dispatch, id_container).then(() => {
+      getContainers(token, dispatch);
+    });
+  };
 
-      {
-        title: "Action",
-        dataIndex: "operation",
-        render: (_, record) =>
-          allServices?.length >= 1 ? (
-            <Popconfirm
-              title="Sure to delete?"
-              onConfirm={() => handleDelete(record.id_service)}>
-              <a>Delete</a>
-            </Popconfirm>
-          ) : null,
-      },
-    ];
+  const handleCancel = () => {
+    setOpen(false);
+  };
 
-    const handleSave = (row) => {
-      const newData = [...services];
-      const index = newData.findIndex(
-        (item) => row.id_service === item.id_service
-      );
-      const item = newData[index];
-      newData.splice(index, 1, {
-        ...item,
-        ...row,
-      });
-      const updatedItem = { ...newData[index], ...row };
-  
-      updateService(
-        updatedItem,
-        token,
-        dispatch,
-        updatedItem.id_service
-      ).then(() => {
-        getServices(token, dispatch);
-      });
-    };
+  const showModal = () => {
+    setOpen(true);
+  };
+
+  const defaultColumns = [
+    {
+      title: "Container Position",
+      dataIndex: "containerPosition",
+      editable: true,
+    },
+    {
+      title: "Size",
+      dataIndex: "size",
+      editable: true,
+    },
+    {
+      title: "ID Warehouse",
+      dataIndex: "id_warehouse",
+      editable: true,
+    },
+ 
+    {
+      title: "Action",
+      dataIndex: "operation",
+      render: (_, record) =>
+        allContainers?.length >= 1 ? (
+          <Popconfirm
+            title="Sure to delete?"
+            onConfirm={() => handleDelete(record.id_container)}>
+            <a>Delete</a>
+          </Popconfirm>
+        ) : null,
+    },
+  ];
+  const handleSave = (row) => {
+    const newData = [...containers];
+    const index = newData.findIndex(
+      (item) => row.id_container === item.id_container
+    );
+    const item = newData[index];
+    newData.splice(index, 1, {
+      ...item,
+      ...row,
+    });
+    const updatedItem = { ...newData[index], ...row };
+
+    updateContainer(
+      updatedItem,
+      token,
+      dispatch,
+      updatedItem.id_container
+    ).then(() => {
+      getContainers(token, dispatch);
+    });
+  };
   const components = {
     body: {
       row: EditableRow,
@@ -202,8 +211,8 @@ const Services = (props) => {
     };
   });
   return (
-    <div className="warehouse-session">
-      <p className="warehouse-title">Service management</p>
+    <div className="container-session">
+      <p className="container-title">Containers management</p>
       <div className="">
         <Button
           onClick={showModal}
@@ -211,62 +220,77 @@ const Services = (props) => {
           style={{
             marginBottom: 16,
           }}>
-          Add new service
+          Add new container
         </Button>
         <Table
           components={components}
           rowClassName={() => "editable-row"}
           bordered
-          dataSource={services ?? []}
+          dataSource={containers ?? []}
           columns={columns}
         />
       </div>
       <Modal
-        title="Create new service"
+        title="Create new container"
         open={open}
         onCancel={handleCancel}
         footer={null}>
         <Form name="form-auth">
           <Form.Item
-            name="name"
+            name="containerposition"
             style={{ width: "100%" }}
             rules={[
-              { required: true, message: "Please input name service !" },
+              { required: true, message: "Please input name warehouse !" },
             ]}>
             <Input
-              placeholder="Service name"
+              placeholder="Container position"
               style={{
                 padding: "8px 12px",
                 color: "var(--grayColor)",
                 fontWeight: "600",
               }}
-              onChange={(e) => setServiceName(e.target.value)}
+              onChange={(e) => setContainerPosition(e.target.value)}
             />
           </Form.Item>
 
           <Form.Item
-            name="price"
+            name="size"
             style={{ width: "100%" }}
-            rules={[{ required: true, message: "Please input Price!" }]}>
+            rules={[{ required: true, message: "Please input location!" }]}>
             <Input
-              placeholder="Price"
+              placeholder="Size"
               style={{
                 padding: "8px 12px",
                 color: "var(--grayColor)",
                 fontWeight: "600",
               }}
-              onChange={(e) => setPrice(e.target.value)}
+              onChange={(e) => setSize(e.target.value)}
             />
           </Form.Item>
 
-       
+          <Form.Item
+            label="Warehouse"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please choose container !" }]}>
+            <Select onChange={(value) => setId_warehouse(value)}>
+              {warehouse?.map((item) => {
+                return (
+                  <Select.Option value={item.id_warehouse}>
+                    {item.warehouseName}
+                  </Select.Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
+
+     
 
           <Form.Item style={{ textAlign: "center" }}>
             <Button
               type="primary"
               htmlType="submit"
               size="large"
-              onClick={handleAddService}
+              onClick={handleAddContainer}
               style={{ padding: "5 px 10px", width: "100%" }}>
               Continue
             </Button>
@@ -277,4 +301,4 @@ const Services = (props) => {
   );
 };
 
-export default Services;
+export default Containers;
