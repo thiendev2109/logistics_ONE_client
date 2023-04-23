@@ -17,7 +17,7 @@ export const createMerchandise = async (token, data, dispatch, navigate) => {
 };
 
 export const getMerchandises = async (accessToken, dispatch) => {
-  dispatch(merchandiseSlice.actions.getmerchandiseStart());
+  dispatch(merchandiseSlice.actions.getMerchandiseStart());
   try {
     const response = await axios.get("http://localhost:8080/api/merchandise", {
       "Content-Type": "multipart/form-data",

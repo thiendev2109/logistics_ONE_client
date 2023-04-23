@@ -17,7 +17,7 @@ export const createService = async (token, data, dispatch, navigate) => {
 };
 
 export const getServices = async (accessToken, dispatch) => {
-  dispatch(serviceSlice.actions.getserviceStart());
+  dispatch(serviceSlice.actions.getServiceStart());
   try {
     const response = await axios.get("http://localhost:8080/api/service", {
       "Content-Type": "multipart/form-data",
