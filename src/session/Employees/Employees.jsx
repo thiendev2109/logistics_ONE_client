@@ -6,12 +6,26 @@ import {
   Table,
   Modal,
   DatePicker,
-  InputNumber,
   Radio,
   Select,
 } from "antd";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import "./Employees.scss";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  accountAdmin,
+  adminToken,
+  allEmployeeType,
+  allEmployees,
+  allWarehouses,
+} from "../../redux/selector";
+import { useNavigate } from "react-router-dom";
+import {
+  createEmployee,
+  deleteEmployee,
+  getEmployees,
+  updateEmployee,
+} from "../../services/employeeRequest";
 const EditableContext = React.createContext(null);
 
 const EditableRow = ({ index, ...props }) => {
@@ -91,89 +105,144 @@ const EditableCell = ({
 };
 
 const Employees = (props) => {
+  //State for add new
+  const [firstname, setFirstName] = useState("");
+  const [lastname, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
+  const [address, setAddress] = useState("");
+  const [cardIndentify, setCardIndentify] = useState("");
+  const [birthday, setBirthday] = useState("");
+  const [sex, setSex] = useState("1");
+  const [id_warehouse, setIdWarehouse] = useState("");
+  const [id_employeeType, setIdEmployeeType] = useState("");
+
+  const onChangeBirthday = (date, dateString) => {
+    setBirthday(dateString);
+  };
+
+  // State core
   const [open, setOpen] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
+  const dispatch = useDispatch();
+  const account = useSelector(accountAdmin);
+  const token = useSelector(adminToken);
+  const employees = useSelector(allEmployees);
+  const warehouse = useSelector(allWarehouses);
+  const empTypes = useSelector(allEmployeeType);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!account) {
+      navigate("/login");
+    }
+    if (token) {
+      getEmployees(token, dispatch);
+    }
+  }, []);
+
+  const handleAddEmployee = () => {
+    const data = {
+      firstname,
+      lastname,
+      email,
+      phone,
+      city,
+      country,
+      address,
+      cardIndentify,
+      birthday,
+      sex,
+      id_warehouse,
+      id_employeeType,
+    };
+    createEmployee(token, data, dispatch, navigate).then(() => {
+      getEmployees(token, dispatch);
+    });
+    setOpen(false);
+  };
 
   const showModal = () => {
     setOpen(true);
   };
 
-  const handleOk = () => {
-    setConfirmLoading(true);
-    setTimeout(() => {
-      setOpen(false);
-      setConfirmLoading(false);
-    }, 2000);
-  };
-
   const handleCancel = () => {
-    console.log("Clicked cancel button");
     setOpen(false);
   };
 
-  const [dataSource, setDataSource] = useState([
-    {
-      key: "0",
-      name: "Edward King 0",
-      age: "32",
-      address: "London, Park Lane no. 0",
-    },
-    {
-      key: "1",
-      name: "Edward King 1",
-      age: "32",
-      address: "London, Park Lane no. 1",
-    },
-  ]);
-  const [count, setCount] = useState(2);
-  const handleDelete = (key) => {
-    const newData = dataSource.filter((item) => item.key !== key);
-    setDataSource(newData);
+  const handleDelete = (id_employee) => {
+    deleteEmployee(token, dispatch, id_employee).then(() => {
+      getEmployees(token, dispatch);
+    });
   };
+
+  const handleSave = (row) => {
+    const newData = [...employees];
+    const index = newData.findIndex(
+      (item) => row.id_employee === item.id_employee
+    );
+    const item = newData[index];
+    newData.splice(index, 1, {
+      ...item,
+      ...row,
+    });
+    const updatedItem = { ...newData[index], ...row };
+
+    updateEmployee(updatedItem, token, dispatch, updatedItem.id_employee).then(
+      () => {
+        getEmployees(token, dispatch);
+      }
+    );
+  };
+
   const defaultColumns = [
     {
       title: "ID",
-      dataIndex: "name",
+      dataIndex: "id_employee",
       editable: true,
     },
     {
       title: "Name",
-      dataIndex: "name",
+      dataIndex: "lastname",
       editable: true,
     },
     {
       title: "Email",
-      dataIndex: "name",
+      dataIndex: "email",
       editable: true,
     },
     {
       title: "Phone",
-      dataIndex: "name",
+      dataIndex: "phone",
       editable: true,
     },
     {
       title: "Type",
       dataIndex: "name",
-      editable: true,
+      editable: false,
     },
     {
       title: "Warehouse",
-      dataIndex: "name",
-      editable: true,
+      dataIndex: "id_warehouse",
+      editable: false,
     },
     {
       title: "Sex",
-      dataIndex: "Male",
+      dataIndex: "sex",
+      render: (text, record) => {
+        return record.sex ? "Male" : "Female";
+      },
     },
 
     {
       title: "operation",
       dataIndex: "operation",
       render: (_, record) =>
-        dataSource.length >= 1 ? (
+        employees?.length >= 1 ? (
           <Popconfirm
             title="Sure to delete?"
-            onConfirm={() => handleDelete(record.key)}>
+            onConfirm={() => handleDelete(record.id_employee)}>
             <Button style={{ color: "white", backgroundColor: "blue" }}>
               Delete
             </Button>
@@ -181,39 +250,14 @@ const Employees = (props) => {
         ) : null,
     },
   ];
-  const handleAdd = () => {
-    const newData = {
-      key: count,
-      name: `Edward King ${count}`,
-      age: "32",
-      address: `London, Park Lane no. ${count}`,
-    };
-    setDataSource([...dataSource, newData]);
-    setCount(count + 1);
-    setConfirmLoading(true);
-    setTimeout(() => {
-      setOpen(false);
-      setConfirmLoading(false);
-    }, 2000);
-  };
 
-  const handleSave = (row) => {
-    const newData = [...dataSource];
-    const index = newData.findIndex((item) => row.key === item.key);
-    const item = newData[index];
-    newData.splice(index, 1, {
-      ...item,
-      ...row,
-    });
-    console.log(newData);
-    setDataSource(newData);
-  };
   const components = {
     body: {
       row: EditableRow,
       cell: EditableCell,
     },
   };
+
   const columns = defaultColumns.map((col) => {
     if (!col.editable) {
       return col;
@@ -245,65 +289,210 @@ const Employees = (props) => {
           components={components}
           rowClassName={() => "editable-row"}
           bordered
-          dataSource={dataSource}
+          dataSource={employees ?? []}
           columns={columns}
         />
       </div>
       <Modal
-        title="Create new employees"
+        title="Create new customer"
         open={open}
-        onOk={handleAdd}
-        confirmLoading={confirmLoading}
-        onCancel={handleCancel}>
-        <Form
-          labelCol={{
-            span: 4,
-          }}
-          wrapperCol={{
-            span: 14,
-          }}
-          layout="horizontal"
-          style={{
-            maxWidth: 600,
-          }}>
-          <Form.Item label="First name">
-            <Input placeholder="First name" required />
+        onCancel={handleCancel}
+        footer={null}>
+        <Form name="form-auth">
+          <Form.Item
+            name="firstname"
+            style={{ width: "100%" }}
+            rules={[
+              { required: true, message: "Please input your first name!" },
+            ]}>
+            <Input
+              placeholder="First name"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
           </Form.Item>
-          <Form.Item label="Last name">
-            <Input placeholder="Last name" />
+
+          <Form.Item
+            name="lastname"
+            style={{ width: "100%" }}
+            rules={[
+              { required: true, message: "Please input your last name!" },
+            ]}>
+            <Input
+              placeholder="Last name"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setLastName(e.target.value)}
+            />
           </Form.Item>
-          <Form.Item label="Email">
-            <Input placeholder="Email" />
+
+          <Form.Item
+            name="email"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please input your email!" }]}>
+            <Input
+              placeholder="Email Address"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </Form.Item>
-          <Form.Item label="Phone">
-            <Input placeholder="Phone" />
+
+          <Form.Item
+            name="phone"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please input your phone!" }]}>
+            <Input
+              placeholder="Phone number"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setPhone(e.target.value)}
+            />
           </Form.Item>
-          <Form.Item label="City">
-            <Input placeholder="City" />
+          <Form.Item
+            name="city"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please input your city!" }]}>
+            <Input
+              placeholder="City"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setCity(e.target.value)}
+            />
           </Form.Item>
-          <Form.Item label="Country">
-            <Input placeholder="Country" />
+
+          <Form.Item
+            name="country"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please input your country!" }]}>
+            <Input
+              placeholder="Country"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setCountry(e.target.value)}
+            />
           </Form.Item>
-          <Form.Item label="Address">
-            <Input placeholder="Address" />
+
+          <Form.Item
+            name="address"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please input your address!" }]}>
+            <Input
+              placeholder="Address"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setAddress(e.target.value)}
+            />
           </Form.Item>
-          <Form.Item label="ICID">
-            <InputNumber placeholder="CMND" />
+
+          <Form.Item
+            name="card"
+            style={{ width: "100%" }}
+            rules={[
+              { required: true, message: "Please input card indentify!" },
+            ]}>
+            <Input
+              placeholder="Card Indentify"
+              style={{
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+              onChange={(e) => setCardIndentify(e.target.value)}
+            />
           </Form.Item>
-          <Form.Item label="Birthday">
-            <DatePicker />
+
+          <Form.Item
+            name="birthday"
+            style={{ width: "100%" }}
+            rules={[
+              { required: true, message: "Please input your birthday!" },
+            ]}>
+            <DatePicker
+              placeholder="Birthday"
+              onChange={onChangeBirthday}
+              style={{
+                width: "100%",
+                padding: "8px 12px",
+                color: "var(--grayColor)",
+                fontWeight: "600",
+              }}
+            />
           </Form.Item>
-          <Form.Item label="Sex">
-            <Radio.Group>
-              <Radio value="male"> Male </Radio>
-              <Radio value="female"> Female </Radio>
+
+          <Form.Item
+            label="Sex"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please input your sex!" }]}>
+            <Radio.Group
+              defaultValue={sex}
+              onChange={(e) => setSex(e.target.value)}>
+              <Radio value="1"> Male </Radio>
+              <Radio value="0"> Female </Radio>
             </Radio.Group>
           </Form.Item>
-          <Form.Item label="Warehouse">
-            <Select>
-              <Select.Option value="demo">Vietnam</Select.Option>
-              <Select.Option value="demo">Singapore</Select.Option>
+
+          <Form.Item
+            label="Warehouse"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please choose warehouse !" }]}>
+            <Select onChange={(value) => setIdWarehouse(value)}>
+              {warehouse?.map((item) => {
+                return (
+                  <Select.Option value={item.id_warehouse}>
+                    {item.warehouseName}
+                  </Select.Option>
+                );
+              })}
             </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Employee Type"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please choose warehouse !" }]}>
+            <Select onChange={(value) => setIdEmployeeType(value)}>
+              {empTypes?.map((item) => {
+                return (
+                  <Select.Option value={item.id_employeeType}>
+                    {item.employeeTypeName}
+                  </Select.Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
+
+          <Form.Item style={{ textAlign: "center" }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              size="large"
+              onClick={handleAddEmployee}
+              style={{ padding: "5 px 10px", width: "100%" }}>
+              Continue
+            </Button>
           </Form.Item>
         </Form>
       </Modal>

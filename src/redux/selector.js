@@ -8,3 +8,9 @@ export const allCustomers = (state) =>
 
 export const allWarehouses = (state) =>
   state.warehouse.warehouses.allWarehouses?.data;
+
+export const allEmployeeType = (state) =>
+  state.employeeType.employeeTypes.allTypes?.data;
+
+export const allEmployees = (state) =>
+  state.employee.employees.allEmployees?.data;

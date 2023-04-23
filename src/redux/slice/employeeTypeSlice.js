@@ -13,66 +13,66 @@ const employeeTypeSlice = createSlice({
 
   reducers: {
     createEmployeeTypeStart: (state) => {
-      state.employees.isFetching = true;
-      state.employees.allTypes = null;
-      state.employees.message = "Loading";
+      state.employeeTypes.isFetching = true;
+      state.employeeTypes.allTypes = null;
+      state.employeeTypes.message = "Loading";
     },
     createEmployeeTypeSuccess: (state, action) => {
-      state.employees.isFetching = false;
-      state.employees.error = false;
-      state.employees.message = "Create new employee Success";
+      state.employeeTypes.isFetching = false;
+      state.employeeTypes.error = false;
+      state.employeeTypes.message = "Create new employee Success";
     },
     createEmployeeTypeFailed: (state, action) => {
-      state.employees.isFetching = false;
-      state.employees.error = true;
-      state.employees.message = "Somethings went wrong";
+      state.employeeTypes.isFetching = false;
+      state.employeeTypes.error = true;
+      state.employeeTypes.message = "Somethings went wrong";
     },
 
     getEmployeeTypesStart: (state) => {
-      state.employees.isFetching = true;
-      state.employees.allTypes = null;
-      state.employees.message = "Loading";
+      state.employeeTypes.isFetching = true;
+      state.employeeTypes.allTypes = null;
+      state.employeeTypes.message = "Loading";
     },
     getEmployeeTypesSuccess: (state, action) => {
-      state.employees.isFetching = false;
-      state.employees.allTypes = action.payload;
-      state.employees.error = false;
-      state.employees.message = "Success";
+      state.employeeTypes.isFetching = false;
+      state.employeeTypes.allTypes = action.payload;
+      state.employeeTypes.error = false;
+      state.employeeTypes.message = "Success";
     },
     getEmployeeTypesFailed: (state) => {
-      state.employees.isFetching = false;
-      state.employees.error = true;
-      state.employees.message = "Somethings went wrong";
+      state.employeeTypes.isFetching = false;
+      state.employeeTypes.error = true;
+      state.employeeTypes.message = "Somethings went wrong";
     },
 
     deleteEmployeeTypeStart: (state) => {
-      state.employees.isFetching = true;
-      state.employees.message = "Loading";
+      state.employeeTypes.isFetching = true;
+      state.employeeTypes.message = "Loading";
     },
     deleteEmployeeTypeSuccess: (state) => {
-      state.employees.isFetching = false;
-      state.employees.error = false;
-      state.employees.message = "Success";
+      state.employeeTypes.isFetching = false;
+      state.employeeTypes.error = false;
+      state.employeeTypes.message = "Success";
     },
     deleteEmployeeTypeFailed: (state) => {
-      state.employees.isFetching = false;
-      state.employees.error = true;
-      state.employees.message = "Somethings went wrong";
+      state.employeeTypes.isFetching = false;
+      state.employeeTypes.error = true;
+      state.employeeTypes.message = "Somethings went wrong";
     },
 
     updateEmployeeTypeStart: (state) => {
-      state.employees.isFetching = true;
-      state.employees.message = "Loading";
+      state.employeeTypes.isFetching = true;
+      state.employeeTypes.message = "Loading";
     },
     updateEmployeeTypeSuccess: (state) => {
-      state.employees.isFetching = false;
-      state.employees.error = false;
-      state.employees.message = "Success";
+      state.employeeTypes.isFetching = false;
+      state.employeeTypes.error = false;
+      state.employeeTypes.message = "Success";
     },
     updateEmployeeTypeFailed: (state) => {
-      state.employees.isFetching = false;
-      state.employees.error = true;
-      state.employees.message = "Somethings went wrong";
+      state.employeeTypes.isFetching = false;
+      state.employeeTypes.error = true;
+      state.employeeTypes.message = "Somethings went wrong";
     },
   },
 });
