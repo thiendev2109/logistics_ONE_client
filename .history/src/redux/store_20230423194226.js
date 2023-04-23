@@ -13,7 +13,6 @@ import authAdminSlice from "./slice/authAdminSlice";
 import customerSlice from "./slice/customerSlice";
 import warehouseSlice from "./slice/warehouseSlice";
 import employeeTypeSlice from "./slice/employeeTypeSlice";
-import containerSlice from "./slice/containerSlice"
 
 const rootReducer = combineReducers({
   authAdmin: authAdminSlice.reducer,

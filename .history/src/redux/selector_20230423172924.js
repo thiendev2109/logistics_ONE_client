@@ -8,5 +8,3 @@ export const allCustomers = (state) =>
 
 export const allWarehouses = (state) =>
   state.warehouse.warehouses.allWarehouses?.data;
-export const allContainers = (state) =>
-  state.container.containers.allContainers?.data;

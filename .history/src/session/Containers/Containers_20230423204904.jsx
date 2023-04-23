@@ -236,13 +236,13 @@ const Containers = (props) => {
         footer={null}>
         <Form name="form-auth">
           <Form.Item
-            name="containerposition"
+            name="name"
             style={{ width: "100%" }}
             rules={[
               { required: true, message: "Please input name warehouse !" },
             ]}>
             <Input
-              placeholder="Container position"
+              placeholder="Warehouse name"
               style={{
                 padding: "8px 12px",
                 color: "var(--grayColor)",
@@ -253,11 +253,11 @@ const Containers = (props) => {
           </Form.Item>
 
           <Form.Item
-            name="size"
+            name="location"
             style={{ width: "100%" }}
             rules={[{ required: true, message: "Please input location!" }]}>
             <Input
-              placeholder="Size"
+              placeholder="Warehouse location"
               style={{
                 padding: "8px 12px",
                 color: "var(--grayColor)",
@@ -268,13 +268,13 @@ const Containers = (props) => {
           </Form.Item>
 
           <Form.Item
-            name="id_warehouse"
+            name="email"
             style={{ width: "100%" }}
             rules={[
               { required: true, message: "Please input Warehouse email!" },
             ]}>
             <Input
-              placeholder="id warehouse"
+              placeholder="Email Address"
               style={{
                 padding: "8px 12px",
                 color: "var(--grayColor)",

@@ -78,4 +78,4 @@ const containerSlice = createSlice({
   },
 });
 
-export default containerSlice;
+export default customerSlice;
