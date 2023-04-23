@@ -12,7 +12,6 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import "./Customers.scss";
-import Password from "antd/es/input/Password";
 import { accountAdmin, adminToken, allCustomers } from "../../redux/selector";
 import {
   deleteCustomer,
@@ -20,8 +19,6 @@ import {
   registerCustomer,
   updateCustomer,
 } from "../../services/customerRequest";
-import { createAxios } from "../../createInstance";
-import authAdminSlice from "../../redux/slice/authAdminSlice";
 const EditableContext = React.createContext(null);
 
 const EditableRow = ({ index, ...props }) => {

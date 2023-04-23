@@ -4,7 +4,7 @@ import employeeSlice from "../redux/slice/employeeSlice";
 export const createEmployee = async (token, data, dispatch, navigate) => {
   dispatch(employeeSlice.actions.createEmployeeStart());
   try {
-    await axios.post("http://localhost:8080/api/Employee", data, {
+    await axios.post("http://localhost:8080/api/employee", data, {
       "Content-Type": "multipart/form-data",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -17,23 +17,23 @@ export const createEmployee = async (token, data, dispatch, navigate) => {
 };
 
 export const getEmployees = async (accessToken, dispatch) => {
-  dispatch(employeeSlice.actions.getEmployeeStart());
+  dispatch(employeeSlice.actions.getEmployeesStart());
   try {
-    const response = await axios.get("http://localhost:8080/api/Employee", {
+    const response = await axios.get("http://localhost:8080/api/employee", {
       "Content-Type": "multipart/form-data",
       headers: { Authorization: `Bearer ${accessToken}` },
     });
-    dispatch(employeeSlice.actions.getEmployeeSuccess(response.data));
+    dispatch(employeeSlice.actions.getEmployeesSuccess(response.data));
   } catch (error) {
     console.log(error);
-    dispatch(employeeSlice.actions.getEmployeeFailed());
+    dispatch(employeeSlice.actions.getEmployeesFailed());
   }
 };
 
 export const deleteEmployee = async (accessToken, dispatch, id) => {
   dispatch(employeeSlice.actions.deleteEmployeeStart());
   try {
-    await axios.delete(`http://localhost:8080/api/Employee/${id}`, {
+    await axios.delete(`http://localhost:8080/api/employee/${id}`, {
       "Content-Type": "multipart/form-data",
       headers: { Authorization: `Bearer ${accessToken}` },
     });
