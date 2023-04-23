@@ -10,6 +10,7 @@ import {
   Truck,
   Home,
   Type,
+  MapPin,
 } from "react-feather";
 
 export const NavItems = [
@@ -84,5 +85,11 @@ export const NavItems = [
     title: "Warehouse",
     path: "/warehouse",
     icon: <Home />,
+  },
+  {
+    key: 14,
+    title: "Shipping",
+    path: "/shipping",
+    icon: <MapPin />,
   },
 ];

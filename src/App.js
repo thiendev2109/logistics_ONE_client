@@ -1,6 +1,6 @@
 import Login from "./layout/Auth/Login";
 import Register from "./layout/Auth/Register";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Overview from "./session/Overview/Overview";
 import Layout from "./layout/Dashboard/Layout";
 import Customers from "./session/Customers/Customers";
@@ -13,6 +13,7 @@ import Containers from "./session/Containers/Containers";
 import Warehouse from "./session/Warehouse/Warehouse";
 import EmployeeType from "./session/EmployeeType/EmployeeType";
 import Booking from "./session/Booking/Booking";
+import Shipping from "./session/Shipping/Shipping";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
           <Route path="/container" element={<Containers />} />
           <Route path="/payment" element={<Admin />} />
           <Route path="/warehouse" element={<Warehouse />} />
+          <Route path="/shipping" element={<Shipping />} />
         </Route>
       </Routes>
     </>

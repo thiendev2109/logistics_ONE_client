@@ -18,8 +18,11 @@ import "./Booking.scss";
 import {
   accountAdmin,
   adminToken,
+  allBookings,
   allCustomers,
   allEmployees,
+  allMerchandises,
+  allServices,
   allWarehouses,
 } from "../../redux/selector";
 import {
@@ -28,6 +31,12 @@ import {
   registerCustomer,
   updateCustomer,
 } from "../../services/customerRequest";
+import {
+  createBooking,
+  deleteBooking,
+  getBookings,
+  updateBooking,
+} from "../../services/bookingRequest";
 
 const { TextArea } = Input;
 
@@ -135,9 +144,11 @@ const Booking = (props) => {
   const dispatch = useDispatch();
   const account = useSelector(accountAdmin);
   const token = useSelector(adminToken);
-  const employees = useSelector(allEmployees);
+  const bookings = useSelector(allBookings);
   const warehouse = useSelector(allWarehouses);
   const customers = useSelector(allCustomers);
+  const services = useSelector(allServices);
+  const merchandises = useSelector(allMerchandises);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -145,7 +156,7 @@ const Booking = (props) => {
       navigate("/login");
     }
     if (token) {
-      getCustomers(token, dispatch);
+      getBookings(token, dispatch);
     }
   }, []);
 
@@ -164,8 +175,8 @@ const Booking = (props) => {
       volumn1PCS,
       totalWeight,
     };
-    registerCustomer(data, dispatch, navigate).then(() => {
-      getCustomers(token, dispatch);
+    createBooking(token, data, dispatch, navigate).then(() => {
+      getBookings(token, dispatch);
     });
     setOpen(false);
   };
@@ -178,41 +189,45 @@ const Booking = (props) => {
     setOpen(false);
   };
 
-  const handleDelete = (id_customer) => {
-    console.log(id_customer);
-    deleteCustomer(token, dispatch, id_customer).then(() => {
-      getCustomers(token, dispatch);
+  const handleDelete = (id_booking) => {
+    deleteBooking(token, dispatch, id_booking).then(() => {
+      getBookings(token, dispatch);
     });
   };
   const defaultColumns = [
     {
-      title: "Name",
-      dataIndex: `lastname`,
+      title: "ID",
+      dataIndex: `id_booking`,
+      editable: false,
+    },
+    {
+      title: "Warehouse",
+      dataIndex: `id_warehouse`,
+      editable: false,
+    },
+    {
+      title: "Customer",
+      dataIndex: "id_customer",
+      editable: false,
+    },
+    {
+      title: "Origin",
+      dataIndex: "origin",
       editable: true,
     },
     {
-      title: "Email",
-      dataIndex: "email",
+      title: "Destination",
+      dataIndex: "destination",
       editable: true,
     },
     {
-      title: "Phone",
-      dataIndex: "phone",
-      editable: true,
+      title: "Status",
+      dataIndex: "status",
+      editable: false,
     },
     {
-      title: "City",
-      dataIndex: "city",
-      editable: true,
-    },
-    {
-      title: "Address",
-      dataIndex: "address",
-      editable: true,
-    },
-    {
-      title: "Sex",
-      dataIndex: "sex",
+      title: "Total weight",
+      dataIndex: "totalWeight",
       render: (text, record) => {
         return record.sex ? "Male" : "Female";
       },
@@ -222,11 +237,11 @@ const Booking = (props) => {
       title: "Actions",
       dataIndex: "operation",
       render: (_, record) =>
-        employees?.length >= 1 ? (
+        bookings?.length >= 1 ? (
           <>
             <Popconfirm
               title="Sure to delete?"
-              onConfirm={() => handleDelete(record.id_customer)}>
+              onConfirm={() => handleDelete(record.id_booking)}>
               <a>Delete</a>
             </Popconfirm>
           </>
@@ -235,9 +250,9 @@ const Booking = (props) => {
   ];
 
   const handleSave = (row) => {
-    const newData = [...employees];
+    const newData = [...bookings];
     const index = newData.findIndex(
-      (item) => row.id_customer === item.id_customer
+      (item) => row.id_booking === item.id_booking
     );
     const item = newData[index];
     newData.splice(index, 1, {
@@ -246,9 +261,9 @@ const Booking = (props) => {
     });
     const updatedItem = { ...newData[index], ...row };
 
-    updateCustomer(updatedItem, token, dispatch, updatedItem.id_customer).then(
+    updateBooking(updatedItem, token, dispatch, updatedItem.id_booking).then(
       () => {
-        getCustomers(token, dispatch);
+        getBookings(token, dispatch);
       }
     );
   };
@@ -284,13 +299,13 @@ const Booking = (props) => {
           style={{
             marginBottom: 16,
           }}>
-          Add a customer
+          Add a booking
         </Button>
         <Table
           components={components}
           rowClassName={() => "editable-row"}
           bordered
-          dataSource={employees ?? []}
+          dataSource={bookings ?? []}
           columns={columns}
         />
       </div>
@@ -335,14 +350,14 @@ const Booking = (props) => {
 
           <Form.Item
             style={{ width: "100%" }}
-            rules={[{ required: true, message: "Please choose customer !" }]}>
+            rules={[{ required: true, message: "Please choose service !" }]}>
             <Select
               onChange={(value) => setIdService(value)}
               placeholder="Service">
-              {customers?.map((item) => {
+              {services?.map((item) => {
                 return (
-                  <Select.Option value={item.id_customer}>
-                    {item.email} - {item.lastname}
+                  <Select.Option value={item.id_service}>
+                    {item.serviceName}
                   </Select.Option>
                 );
               })}
@@ -351,14 +366,16 @@ const Booking = (props) => {
 
           <Form.Item
             style={{ width: "100%" }}
-            rules={[{ required: true, message: "Please choose customer !" }]}>
+            rules={[
+              { required: true, message: "Please choose merchandise !" },
+            ]}>
             <Select
               onChange={(value) => setIdMerchandise(value)}
               placeholder="Merchandise">
-              {customers?.map((item) => {
+              {merchandises?.map((item) => {
                 return (
-                  <Select.Option value={item.id_customer}>
-                    {item.email} - {item.lastname}
+                  <Select.Option value={item.id_merchandiseType}>
+                    {item.merchandiseTypeName}
                   </Select.Option>
                 );
               })}
