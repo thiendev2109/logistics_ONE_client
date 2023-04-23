@@ -24,3 +24,8 @@ export const allServices = (state) => state.service.services.allServices?.data;
 
 export const allMerchandises = (state) =>
   state.merchandise.merchandises.allMerchandises?.data;
+
+  export const allPayments = (state) => state.payment.payments.allPayments?.data;
+
+  export const allShippings = (state) => state.shipping.shippings.allShippings?.data;
+

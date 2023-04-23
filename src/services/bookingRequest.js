@@ -16,6 +16,37 @@ export const createBooking = async (token, data, dispatch, navigate) => {
   }
 };
 
+export const createShipping = async (token, data, dispatch, navigate) => {
+    dispatch(bookingSlice.actions.createBookingStart());
+    try {
+      await axios.post("http://localhost:8080/api/booking-to-shipping", data, {
+        "Content-Type": "multipart/form-data",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      dispatch(bookingSlice.actions.createBookingSuccess());
+      navigate(this);
+    } catch (error) {
+      console.log(error);
+      dispatch(bookingSlice.actions.createBookingFailed());
+    }
+  };
+
+  export const createPayment = async (token, data, dispatch, navigate) => {
+    dispatch(bookingSlice.actions.createBookingStart());
+    try {
+      await axios.post("http://localhost:8080/api/booking-to-payment", data, {
+        "Content-Type": "multipart/form-data",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      dispatch(bookingSlice.actions.createBookingSuccess());
+      navigate(this);
+    } catch (error) {
+      console.log(error);
+      dispatch(bookingSlice.actions.createBookingFailed());
+    }
+  };
+
+
 export const getBookings = async (accessToken, dispatch) => {
   dispatch(bookingSlice.actions.getBookingStart());
   try {
@@ -57,3 +88,16 @@ export const updateBooking = async (data, accessToken, dispatch, id) => {
     dispatch(bookingSlice.actions.updateBookingFailed());
   }
 };
+export const updateBookingToStatus = async (data, accessToken, dispatch, id) => {
+    dispatch(bookingSlice.actions.updateBookingStart());
+    try {
+      await axios.put(`http://localhost:8080/api/booking-to-status/${id}`, data, {
+        "Content-Type": "multipart/form-data",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      dispatch(bookingSlice.actions.updateBookingSuccess());
+    } catch (error) {
+      console.log(error);
+      dispatch(bookingSlice.actions.updateBookingFailed());
+    }
+  };

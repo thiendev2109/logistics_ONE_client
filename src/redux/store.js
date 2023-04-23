@@ -19,6 +19,7 @@ import vehicalSlice from "./slice/vehicalSlice";
 import adminSlice from "./slice/adminSlice";
 import serviceSlice from "./slice/serviceSlice";
 import merchandiseSlice from "./slice/merchandiseSlice";
+import paymemtSlice from "./slice/paymentSlice";
 
 const rootReducer = combineReducers({
   authAdmin: authAdminSlice.reducer,
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
   admin: adminSlice.reducer,
   service: serviceSlice.reducer,
   merchandise: merchandiseSlice.reducer,
+  paymemtSlice: paymemtSlice.reducer,
 });
 
 const persistConfig = {
